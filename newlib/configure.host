@@ -305,6 +305,14 @@ case "${host_cpu}" in
 	machine_dir=xtensa
 	newlib_cflags="${newlib_cflags} -mlongcalls"
 	newlib_cflags="${newlib_cflags} -DREENTRANT_SYSCALLS_PROVIDED"
+	# ESP8266 has it's own malloc version, so don't provide a new one. User should either write a stub that calls os_malloc, or change linker script.
+	newlib_cflags="${newlib_cflags} -DMALLOC_PROVIDED"
+	# ESP8266 is low on memory, prefer size over speed seems obvious
+	newlib_cflags="${newlib_cflags} -DPREFER_SIZE_OVER_SPEED"
+	# Signals make no sense, as ESP8266 doesn't have a concept of processes, kill, etc.
+	newlib_cflags="${newlib_cflags} -DSIGNAL_PROVIDED"
+	# Abort tries to pull in signals and file io (writing to stdin), instead ESP8266 programmers should pull in their own abort stub.
+	newlib_cflags="${newlib_cflags} -DABORT_PROVIDED"
         ;;
   z8k)
 	machine_dir=z8k
